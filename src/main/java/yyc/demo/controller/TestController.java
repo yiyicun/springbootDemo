@@ -5,13 +5,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import yyc.demo.bean.Student;
 import yyc.demo.mapper.UserMapper;
+import yyc.demo.msg.Meg;
+import yyc.demo.msg.Request;
+import yyc.demo.msg.Response;
+import yyc.demo.redis.lock.LockService;
+import yyc.demo.redis.lock.User;
 import yyc.demo.service.AsyncDemo;
 import yyc.demo.service.TransationalImpl;
 import yyc.demo.service.UserService;
@@ -36,6 +39,8 @@ public class TestController {
     UserService userService;
     @Autowired
     TransationalImpl transational;
+    @Autowired
+    LockService lockService;
 
     @RequestMapping(value = "/test")
     public String test(@RequestParam int id) throws Exception {
@@ -88,6 +93,19 @@ public class TestController {
 
         transational.addUser();
 
+    }
+
+    @PostMapping(value = "/lock")
+    @ResponseBody
+    public Response<Meg> lock(@RequestBody Request<User> request) throws InterruptedException {
+
+        lockService.lock(request.getReqBody());
+        Response<Meg> response = new Response<>();
+        Meg meg = new Meg();
+        meg.setCode("0000");
+        meg.setInfo("成功返回");
+        response.setRespBody(meg);
+        return response;
     }
 
 

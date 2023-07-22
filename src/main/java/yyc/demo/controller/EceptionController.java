@@ -34,8 +34,8 @@ public class EceptionController implements ResponseBodyAdvice {
 
         Response<Meg> response = new Response<>();
         Meg meg = new Meg();
-        meg.setCode("1212");
-        meg.setInfo("111");
+        meg.setCode("error");
+        meg.setInfo(e.getMessage());
         response.setRespBody(meg);
         return response;
     }
